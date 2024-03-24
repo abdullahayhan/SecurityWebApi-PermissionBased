@@ -8,7 +8,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        return services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+        return services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly))
+            .AddAutoMapper(typeof(MappingProfiles));
     }
 }
 
