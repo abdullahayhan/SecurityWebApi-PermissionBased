@@ -58,7 +58,7 @@ public class TokenService : ITokenService
         {
             return await ResponseWrapper<TokenResponse>.FailAsync("Invalid Credentials");
         }
-        // generate refresh token
+        // generate refresh token (refresh token database üzerinden tutulur.)
         user.RefreshToken = GenerateRefreshToken();
         user.RefreshTokenExpiryDate = DateTime.Now.AddDays(7);
         // update user
@@ -76,9 +76,39 @@ public class TokenService : ITokenService
         return ResponseWrapper<TokenResponse>.Success(response);
     }
 
-    public Task<ResponseWrapper<TokenResponse>> GetRefreshToken(RefreshTokenRequest refreshTokenRequest)
+    public async Task<ResponseWrapper<TokenResponse>> GetRefreshToken(RefreshTokenRequest refreshTokenRequest)
     {
-        throw new NotImplementedException();
+        if (refreshTokenRequest is null)
+        {
+            return await ResponseWrapper<TokenResponse>.FailAsync("Invalid Client Token.");
+        }
+        var userPrincipal = GetPrincipalFromExpiredToken(refreshTokenRequest.Token);
+        var userEmail = userPrincipal.FindFirstValue(ClaimTypes.Email);
+        var user = await _userManager.FindByEmailAsync(userEmail!);
+
+        if (user is null)
+        {
+            return await ResponseWrapper<TokenResponse>.FailAsync("User Not Found.");
+        }
+        if (user.RefreshToken != refreshTokenRequest.RefreshToken || user.RefreshTokenExpiryDate <= DateTime.Now)
+        {
+            return await ResponseWrapper<TokenResponse>.FailAsync("Invalid Client Token.");
+        }
+
+        var token = GenerateEncryptedToken(GetSigningCredentials(),await GetClaimsAsync(user));
+        user.RefreshToken = GenerateRefreshToken();
+        user.RefreshTokenExpiryDate = DateTime.Now.AddDays(7);
+        await _userManager.UpdateAsync(user);
+
+        var response = new TokenResponse
+        {
+            Token = token,
+            RefreshToken = user.RefreshToken,
+            RefreshTokenExpiryTime = user.RefreshTokenExpiryDate
+        };
+
+        return ResponseWrapper<TokenResponse>.Success(response);
+
     }
 
     private string GenerateRefreshToken()
@@ -143,5 +173,28 @@ public class TokenService : ITokenService
         .Union(permissionClaims);
 
         return claims; //finallyyyyy be abi
+    }
+
+    private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appConfiguration.Secret)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            RoleClaimType = ClaimTypes.Role,
+            ClockSkew = TimeSpan.Zero,
+        };
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+        if (securityToken is not JwtSecurityToken jwtSecurityToken 
+            || !jwtSecurityToken.Header.Alg
+                .Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+        {
+            throw new SecurityTokenException("Invalid token");
+        }
+
+        return principal;
     }
 }
