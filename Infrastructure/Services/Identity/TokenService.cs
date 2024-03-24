@@ -3,7 +3,6 @@ using Application.Services.Identity;
 using Common.Requests;
 using Common.Responses;
 using Common.Responses.Wrappers;
-using Infrastructure.Context;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -17,17 +16,14 @@ namespace Infrastructure.Services.Identity;
 
 public class TokenService : ITokenService
 {
-    private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly AppConfiguration _appConfiguration;
 
-    public TokenService(ApplicationDbContext context,
-        UserManager<ApplicationUser> userManager,
+    public TokenService(UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
         IOptions<AppConfiguration> appConfiguration)
     {
-        _context = context;
         _userManager = userManager;
         _roleManager = roleManager;
         _appConfiguration = appConfiguration.Value;
@@ -95,7 +91,7 @@ public class TokenService : ITokenService
             return await ResponseWrapper<TokenResponse>.FailAsync("Invalid Client Token.");
         }
 
-        var token = GenerateEncryptedToken(GetSigningCredentials(),await GetClaimsAsync(user));
+        var token = GenerateEncryptedToken(GetSigningCredentials(), await GetClaimsAsync(user));
         user.RefreshToken = GenerateRefreshToken();
         user.RefreshTokenExpiryDate = DateTime.Now.AddDays(7);
         await _userManager.UpdateAsync(user);
@@ -132,16 +128,16 @@ public class TokenService : ITokenService
         var token = new JwtSecurityToken(
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(_appConfiguration.TokenExpiryInMinutes),
-            signingCredentials : signingCredentials);
+            signingCredentials: signingCredentials);
         var tokenHandler = new JwtSecurityTokenHandler();
         var encryptedToken = tokenHandler.WriteToken(token);
         return encryptedToken;
     }
 
-    private SigningCredentials GetSigningCredentials() 
+    private SigningCredentials GetSigningCredentials()
     {
         var secret = Encoding.UTF8.GetBytes(_appConfiguration.Secret);
-        return new SigningCredentials(new SymmetricSecurityKey(secret),SecurityAlgorithms.HmacSha256);
+        return new SigningCredentials(new SymmetricSecurityKey(secret), SecurityAlgorithms.HmacSha256);
     }
 
     private async Task<IEnumerable<Claim>> GetClaimsAsync(ApplicationUser user)
@@ -155,13 +151,13 @@ public class TokenService : ITokenService
         foreach (var role in roles)
         {
             roleClaims.Add(new Claim(ClaimTypes.Role, role));
-            var currentRole = await _roleManager.FindByIdAsync(role);
-            var allPermissionsForCurrentRole = await _roleManager.GetClaimsAsync(currentRole!);
+            var currentRole = await _roleManager.FindByNameAsync(role);
+            var allPermissionsForCurrentRole = await _roleManager.GetClaimsAsync(currentRole);
             permissionClaims.AddRange(allPermissionsForCurrentRole);
         }
 
-        var claims = new List<Claim> 
-        { 
+        var claims = new List<Claim>
+        {
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Email, user.Email ?? string.Empty),
             new(ClaimTypes.Name, user.FirstName ?? string.Empty),
@@ -188,7 +184,7 @@ public class TokenService : ITokenService
         };
         var tokenHandler = new JwtSecurityTokenHandler();
         var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-        if (securityToken is not JwtSecurityToken jwtSecurityToken 
+        if (securityToken is not JwtSecurityToken jwtSecurityToken
             || !jwtSecurityToken.Header.Alg
                 .Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
         {
