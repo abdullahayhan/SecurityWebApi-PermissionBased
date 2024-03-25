@@ -1,6 +1,6 @@
 ﻿using Application.Features.Identity.Queries;
 using Common.Authorization;
-using Common.Requests;
+using Common.Requests.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Attributes;
@@ -24,7 +24,6 @@ public class TokenController : AppBaseController<TokenController>
     }
 
     [HttpPost("get-refresh-token")]
-    [MustPermission(AppFeature.Users,AppAction.Read)]
     public async Task<IActionResult> GetRefreshTokenAsync([FromBody] RefreshTokenRequest refreshTokenRequest)
     {
         var response = await MeaditorSender.Send(new GetRefreshTokenQuery(refreshTokenRequest));

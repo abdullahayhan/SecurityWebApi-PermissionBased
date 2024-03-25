@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Common.Requests.Employee;
-using Common.Responses.Employee;
+using Common.Responses;
 using Domain;
 
 namespace Application;

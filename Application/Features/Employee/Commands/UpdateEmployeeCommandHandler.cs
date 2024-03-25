@@ -1,6 +1,6 @@
 ﻿using Application.Services;
 using AutoMapper;
-using Common.Responses.Employee;
+using Common.Responses;
 using Common.Responses.Wrappers;
 using Domain;
 using MediatR;

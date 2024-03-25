@@ -1,7 +1,9 @@
 ﻿using Application.Features.Employee.Commands;
 using Application.Features.Employee.Queries;
+using Common.Authorization;
 using Common.Requests.Employee;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Attributes;
 
 namespace WebApi.Controllers;
 
@@ -9,6 +11,7 @@ namespace WebApi.Controllers;
 [ApiController]
 public class EmployeeController : AppBaseController<EmployeeController>
 {
+    [MustPermission(AppFeature.Employees,AppAction.Create)]
     [HttpPost]
     public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeRequest createEmployeeRequest)
     {
@@ -20,6 +23,7 @@ public class EmployeeController : AppBaseController<EmployeeController>
         return BadRequest(response);
     }
 
+    [MustPermission(AppFeature.Employees, AppAction.Update)]
     [HttpPut]
     public async Task<IActionResult> UpdateEmployee([FromBody] UpdateEmployeeRequest updateEmployeeRequest)
     {
@@ -31,6 +35,7 @@ public class EmployeeController : AppBaseController<EmployeeController>
         return BadRequest(response);
     }
 
+    [MustPermission(AppFeature.Employees, AppAction.Delete)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteEmployee([FromBody] int id)
     {
@@ -42,6 +47,7 @@ public class EmployeeController : AppBaseController<EmployeeController>
         return BadRequest(response);
     }
 
+    [MustPermission(AppFeature.Employees,AppAction.Read)]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEmployeeById([FromBody] int id)
     {
@@ -53,6 +59,7 @@ public class EmployeeController : AppBaseController<EmployeeController>
         return NotFound(response);
     }
 
+    [MustPermission(AppFeature.Employees, AppAction.Read)]
     [HttpGet]
     public async Task<IActionResult> GetEmployeeList()
     {

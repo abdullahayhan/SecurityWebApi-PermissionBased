@@ -1,6 +1,6 @@
 ﻿using Application.AppConfigs;
 using Application.Services.Identity;
-using Common.Requests;
+using Common.Requests.Identity;
 using Common.Responses;
 using Common.Responses.Wrappers;
 using Infrastructure.Models;
@@ -182,8 +182,8 @@ public class TokenService : ITokenService
             RoleClaimType = ClaimTypes.Role,
             ClockSkew = TimeSpan.Zero,
         };
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+        var tokenHandler = new JwtSecurityTokenHandler(); // . Bu nesne, JWT'leri işlemek için kullanılır.
+        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken); //securityToken bir güvenlik belirteci fonksiyon tarafından döndürülür.
         if (securityToken is not JwtSecurityToken jwtSecurityToken
             || !jwtSecurityToken.Header.Alg
                 .Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))

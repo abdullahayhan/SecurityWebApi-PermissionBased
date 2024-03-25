@@ -25,6 +25,7 @@ public class ApplicationDbSeeder
         await CheckAndApplyPendingMigrationAsync();
         await SeedRolesAsync();
         await SeedAdminUserAsync();
+        await SeedCreateUserAsync();
     }
 
     private async Task CheckAndApplyPendingMigrationAsync()
@@ -68,6 +69,11 @@ public class ApplicationDbSeeder
             else if (roleName == AppRoles.Basic)
             {
                 await AssignPermissionsToRoleAsync(role, AppPermissions.BasicPermissions);
+            }
+
+            else if (roleName == AppRoles.EmployeeRead)
+            {
+                await AssignPermissionsToRoleAsync(role, AppPermissions.BasicEmployeePermission);
             }
 
         }
@@ -125,7 +131,33 @@ public class ApplicationDbSeeder
         {
             await _userManager.AddToRolesAsync(adminUser, AppRoles.DefaultRoles);
         }
+    }
 
+    private async Task SeedCreateUserAsync()
+    {
+        string userName = AppCredentials.UserEmail[..AppCredentials.UserEmail.IndexOf('@')];
+        var user = new ApplicationUser
+        {
+            FirstName = "Normal",
+            LastName = "User",
+            Email = AppCredentials.UserEmail,
+            UserName = userName,
+            EmailConfirmed = true,
+            PhoneNumberConfirmed = true,
+            NormalizedEmail = AppCredentials.UserEmail.ToUpperInvariant(),
+            NormalizedUserName = userName.ToUpperInvariant(),
+            IsActive = true
+        };
+        if (!await _userManager.Users.AnyAsync(u => u.Email == user.Email))
+        {
+            var password = new PasswordHasher<ApplicationUser>();
+            user.PasswordHash = password.HashPassword(user, AppCredentials.DefaultUserPassword);
+            await _userManager.CreateAsync(user);
+        }
 
+        if(!await _userManager.IsInRoleAsync(user, AppRoles.EmployeeRead))
+        {
+            await _userManager.AddToRoleAsync(user, AppRoles.EmployeeRead);
+        }
     }
 }

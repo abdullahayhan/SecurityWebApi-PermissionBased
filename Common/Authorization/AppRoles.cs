@@ -10,13 +10,15 @@ public static class AppRoles
 {
     public const string Admin = nameof(Admin);
     public const string Basic = nameof(Basic);
+    public const string EmployeeRead = nameof(EmployeeRead);
 
     // bir koleksiyonun salt okunur (read-only) bir görünümünü sağlar.
     public static IReadOnlyList<string> DefaultRoles { get; }
         = new ReadOnlyCollection<string>(new[]
     {
         Admin,
-        Basic
+        Basic,
+        EmployeeRead
     });
 
     public static bool IsDefault(string roleName)
