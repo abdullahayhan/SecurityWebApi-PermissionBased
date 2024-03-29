@@ -44,7 +44,7 @@ public class ApplicationDbSeeder
                 Bu ifade, _roleManager.Roles.FirstOrDefaultAsync() yöntemi tarafından döndürülen 
                 rol nesnesinin ApplicationRole türüne ait olmadığını doğrular.
 
-                Bu durumda, rolün ApplicationRole türüne ait olup olmadığını kontrol eder 
+                Rolün ApplicationRole türüne ait olup olmadığını kontrol eder 
                 ve eğer değilse, bu durumun işlenmesine izin verir.
             */
 

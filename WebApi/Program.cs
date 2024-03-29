@@ -21,6 +21,7 @@ builder.Services.AddInfrastructureServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.RegisterSwagger();
 
+builder.Services.AddInfrastructureDependencies();
 var app = builder.Build();
 
 app.SeedDatabase();
