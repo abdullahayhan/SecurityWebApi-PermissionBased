@@ -3,7 +3,6 @@ using Application.Services.Identity;
 using Infrastructure.Context;
 using Infrastructure.Services.Employee;
 using Infrastructure.Services.Identity;
-using Infrastructure.Services.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +27,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<ITokenService, TokenService>()
             .AddTransient<IEmployeeService, EmployeeService>()
-            .AddTransient<IUserService, UserService>();
+            .AddTransient<IUserService, UserService>()
+            .AddScoped<ICurrentUserService, CurrentUserService>();
         return services;
     }
 

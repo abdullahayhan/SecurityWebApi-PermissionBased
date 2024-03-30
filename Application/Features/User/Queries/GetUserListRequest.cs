@@ -1,4 +1,4 @@
-﻿using Application.Services;
+﻿using Application.Services.Identity;
 using Common.Responses.Wrappers;
 using MediatR;
 

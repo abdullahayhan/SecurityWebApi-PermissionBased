@@ -1,7 +1,7 @@
 ﻿using Application.Features.User.Commands;
 using Application.Features.User.Queries;
 using Common.Authorization;
-using Common.Requests.User;
+using Common.Requests.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Attributes;
 
@@ -63,12 +63,25 @@ namespace WebApi.Controllers
             return NotFound(response);
         }
 
-        //[MustPermission(AppFeature.Users, AppAction.Update)]
+        [MustPermission(AppFeature.Users, AppAction.Update)]
         [HttpPut("change-password")]
         public async Task<IActionResult> ChangeUserPassword(ChangeUserPasswordRequest changeUserPasswordRequest)
         {
             var response = await MeaditorSender
                 .Send(new ChangeUserPasswordCommand(changeUserPasswordRequest));
+            if (response.IsSuccessful)
+            {
+                return Ok(response);
+            }
+            return NotFound(response);
+        }
+
+        [MustPermission(AppFeature.Users, AppAction.Read)]
+        [HttpGet("roles/{userId}")]
+        public async Task<IActionResult> GetRoles(string userId)
+        {
+            var response = await MeaditorSender
+                .Send(new GetRolesRequest(userId));
             if (response.IsSuccessful)
             {
                 return Ok(response);

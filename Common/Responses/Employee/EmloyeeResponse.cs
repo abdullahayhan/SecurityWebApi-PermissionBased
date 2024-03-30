@@ -1,4 +1,4 @@
-﻿namespace Common.Responses;
+﻿namespace Common.Responses.Employee;
 
 public class EmloyeeResponse
 {

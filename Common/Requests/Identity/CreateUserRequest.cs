@@ -1,4 +1,4 @@
-﻿namespace Common.Requests.User;
+﻿namespace Common.Requests.Identity;
 
 public class CreateUserRequest
 {

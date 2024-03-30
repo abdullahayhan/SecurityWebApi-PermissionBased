@@ -1,4 +1,4 @@
-﻿namespace Common.Responses;
+﻿namespace Common.Responses.Identity;
 
 public class UserResponse
 {

@@ -1,14 +1,14 @@
-﻿using Application.Services;
+﻿using Application.Services.Identity;
 using AutoMapper;
 using Common.Authorization;
-using Common.Requests.User;
-using Common.Responses;
+using Common.Requests.Identity;
+using Common.Responses.Identity;
 using Common.Responses.Wrappers;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services.User;
+namespace Infrastructure.Services.Identity;
 
 public class UserService : IUserService
 {
@@ -47,7 +47,7 @@ public class UserService : IUserService
             return await ResponseWrapper.SuccessAsync("User password updated.");
         }
 
-        return await ResponseWrapper.FailAsync("User password değiştirelemedi, mevcut şifrenizi kontrol ederek tekrar deneyebilirsiniz."); 
+        return await ResponseWrapper.FailAsync(GetIdentityResultErrorDescriptions(result));
     }
 
     public async Task<IResponseWrapper> CreateUserAsync(CreateUserRequest createUserRequest)
@@ -92,7 +92,7 @@ public class UserService : IUserService
                 await _userManager.AddToRoleAsync(newUser, AppRoles.Basic);
                 return await ResponseWrapper<string>.SuccessAsync($"{newUser.FirstName} {newUser.LastName} registered succesfully.", "user registered succesfully");
             }
-            return await ResponseWrapper.FailAsync("User created failed.");
+            return await ResponseWrapper.FailAsync(GetIdentityResultErrorDescriptions(identityResult));
         }
 
         return await ResponseWrapper.FailAsync("Passwords are not matched.");
@@ -103,11 +103,37 @@ public class UserService : IUserService
         var userListInDb = await _userManager.Users.ToListAsync();
         if (userListInDb.Count > 0)
         {
-            var mappedUserList = _mapper.Map<UserResponse>(userListInDb);
-            return await ResponseWrapper<List<UserResponse>>.SuccessAsync();
+            var mappedUserList = _mapper.Map<List<UserResponse>>(userListInDb);
+            return await ResponseWrapper<List<UserResponse>>.SuccessAsync(mappedUserList);
         }
 
         return await ResponseWrapper.FailAsync("User not found");
+    }
+
+    public async Task<IResponseWrapper> GetRolesAsync(string userId)
+    {
+        var userInDb = await _userManager.FindByIdAsync(userId);
+        if (userInDb is not null)
+        {
+            var allRoles = await _roleManager.Roles.ToListAsync();
+            var userRoleVMList = new List<UserRoleViewModel>();
+            foreach (var role in allRoles)
+            {
+                var userRoleVM = new UserRoleViewModel
+                {
+                    RoleName = role.Name,
+                    RoleDescription = role.Description,
+                };
+
+                if (await _userManager.IsInRoleAsync(userInDb, role.Name!))
+                {
+                    userRoleVM.IsAssignedToUser = true;
+                }
+                userRoleVMList.Add(userRoleVM);
+            }
+            return await ResponseWrapper<List<UserRoleViewModel>>.SuccessAsync(userRoleVMList);
+        }
+        return await ResponseWrapper.FailAsync("User is not found");
     }
 
     public async Task<IResponseWrapper> GetUserByIdAsync(string userId)
@@ -137,8 +163,18 @@ public class UserService : IUserService
             {
                 return await ResponseWrapper.SuccessAsync("İşlem başarılı");
             }
-            return await ResponseWrapper.SuccessAsync("Güncelleme işlemi başarısız oldu.");
+            return await ResponseWrapper.FailAsync(GetIdentityResultErrorDescriptions(result));
         }
-        return await ResponseWrapper.SuccessAsync("User not found.");
+        return await ResponseWrapper.FailAsync("User not found.");
+    }
+
+    private List<string> GetIdentityResultErrorDescriptions(IdentityResult identityResult)
+    {
+        var errorDescriptions = new List<string>();
+        foreach (var error in identityResult.Errors)
+        {
+            errorDescriptions.Add(error.Description);
+        }
+        return errorDescriptions;
     }
 }
