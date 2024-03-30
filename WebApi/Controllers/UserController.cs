@@ -89,5 +89,19 @@ namespace WebApi.Controllers
             return NotFound(response);
         }
 
+
+        [MustPermission(AppFeature.Users, AppAction.Update)]
+        [HttpPut("update-user-roles")]
+        public async Task<IActionResult> UpdateUserRole([FromBody] UpdateUserRolesRequest updateUserRolesRequest)
+        {
+            var response = await MeaditorSender
+                .Send(new UpdateUserRolesCommand(updateUserRolesRequest));
+            if (response.IsSuccessful)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response);
+        }
+
     }
 }

@@ -27,7 +27,7 @@ public class EmployeeService : IEmployeeService
         return employee.Id;
     }
 
-    public async Task<Domain.Employee> GetEmployeeByIdAsync(int id)
+    public async Task<Domain.Employee?> GetEmployeeByIdAsync(int id)
     {
         var employeeInDb = await _context.Employees
             .Where(emp => emp.Id == id)

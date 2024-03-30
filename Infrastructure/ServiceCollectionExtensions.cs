@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ITokenService, TokenService>()
             .AddTransient<IEmployeeService, EmployeeService>()
             .AddTransient<IUserService, UserService>()
+            .AddTransient<IRoleService, RoleService>()
             .AddScoped<ICurrentUserService, CurrentUserService>();
         return services;
     }
