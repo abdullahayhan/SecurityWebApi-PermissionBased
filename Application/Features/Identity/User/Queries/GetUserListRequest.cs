@@ -2,7 +2,7 @@
 using Common.Responses.Wrappers;
 using MediatR;
 
-namespace Application.Features.User.Queries;
+namespace Application.Features.Identity.User.Queries;
 
 public record GetUserListRequest : IRequest<IResponseWrapper>;
 

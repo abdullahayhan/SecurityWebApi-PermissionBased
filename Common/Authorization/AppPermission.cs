@@ -30,6 +30,8 @@ public class AppPermissions
 
         new(AppFeature.Roles,AppAction.Read,AppRoleGroup.SystemAccess,"Read Roles"),
         new(AppFeature.Roles,AppAction.Update,AppRoleGroup.SystemAccess,"Update Roles"),
+        new(AppFeature.Roles,AppAction.Create,AppRoleGroup.SystemAccess,"Create Roles"),
+        new(AppFeature.Roles,AppAction.Delete,AppRoleGroup.SystemAccess,"Delete Roles"),
 
         new(AppFeature.RoleClaims,AppAction.Read,AppRoleGroup.SystemAccess,"Read Role Claims/Permissions"),
         new(AppFeature.RoleClaims,AppAction.Update,AppRoleGroup.SystemAccess,"Update Role Claims/Permissions"),
@@ -48,4 +50,7 @@ public class AppPermissions
 
     public static IReadOnlyList<AppPermission> BasicEmployeePermission { get; }
         = new ReadOnlyCollection<AppPermission>(_all.Where(p => p.IsBasic).ToArray());
+
+    public static IReadOnlyList<AppPermission> AllPermissions { get; } 
+        = new ReadOnlyCollection<AppPermission>(_all);
 }

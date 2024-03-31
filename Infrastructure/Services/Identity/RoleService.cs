@@ -4,6 +4,7 @@ using Common.Authorization;
 using Common.Requests.Identity;
 using Common.Responses.Identity;
 using Common.Responses.Wrappers;
+using Infrastructure.Context;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,14 +17,17 @@ public class RoleService : IRoleService
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
+    private readonly ApplicationDbContext _context;
 
     public RoleService(RoleManager<ApplicationRole> roleManager,
         IMapper mapper,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        ApplicationDbContext context)
     {
         _roleManager = roleManager;
         _mapper = mapper;
         _userManager = userManager;
+        _context = context;
     }
 
     public async Task<IResponseWrapper> CreateRoleAsync(CreateRoleRequest createRoleRequest)
@@ -76,6 +80,63 @@ public class RoleService : IRoleService
             return await ResponseWrapper.FailAsync("Admin Rolü silinemez!");
         }
         return await ResponseWrapper.FailAsync("Rol bulunamadı!");
+    }
+
+    public async Task<IResponseWrapper> GetPermissionsAsync(string roleId)
+    {
+        var roleInDb = await _roleManager.FindByIdAsync(roleId);
+        if (roleId is not null)
+        {
+            var allPermissions = AppPermissions.AllPermissions;
+            var roleClaimResponse = new RoleClaimResponse
+            {
+                Role = new RoleResponse()
+                {
+                    Id = roleInDb!.Id,
+                    Name = roleInDb!.Name,
+                    Description = roleInDb!.Description
+                },
+                RoleClaims = new()
+            };
+
+            var currentRoleClaims = await GetAllClaimsForRoleAsync(roleId);
+            var allPermissionNames = allPermissions.Select(p => p.Name).ToList();
+            var currentRoleClaimsValues = currentRoleClaims.Select(c => c.ClaimValue).ToList();
+
+            var currentlyAssignedRoleClaimsNames = allPermissionNames
+                .Intersect(currentRoleClaimsValues) // %100 matchleşme varsa.
+                .ToList();
+
+            foreach (var permission in allPermissions)
+            {
+                if (currentlyAssignedRoleClaimsNames.Any(carc => carc == permission.Name))
+                {
+                    roleClaimResponse.RoleClaims.Add(new RoleClaimViewModel
+                    {
+                        RoleId = roleId,
+                        ClaimType = AppClaim.Permission,
+                        ClaimValue = permission.Name,
+                        Description = permission.Description,
+                        Group = permission.Group,
+                        IsAssignedToRole = true
+                    });
+                }
+                else
+                {
+                    roleClaimResponse.RoleClaims.Add(new RoleClaimViewModel
+                    {
+                        RoleId = roleId,
+                        ClaimType = AppClaim.Permission,
+                        ClaimValue = permission.Name,
+                        Description = permission.Description,
+                        Group = permission.Group,
+                        IsAssignedToRole = false
+                    });
+                }
+            }
+            return await ResponseWrapper<RoleClaimResponse>.SuccessAsync(roleClaimResponse);
+        }
+        return await ResponseWrapper.FailAsync("Rol bilgisi bulunamadı.");
     }
 
     public async Task<IResponseWrapper> GetRoleAsync(string roleId)
@@ -141,5 +202,55 @@ public class RoleService : IRoleService
             return await ResponseWrapper.FailAsync("Admin rolü silinemez.");
         }
         return await ResponseWrapper.FailAsync("İlgili rol bulunamadı.");
+    }
+
+    public async Task<IResponseWrapper> UpdateRolePermissionsAsync
+        (UpdateRolePermissionsRequest updateRolePermissionsRequest)
+    {
+        var roleInDb = await _roleManager.FindByIdAsync(updateRolePermissionsRequest.RoleId);
+        if (roleInDb is not null)
+        {
+            if (roleInDb.Name == AppRoles.Admin)
+            {
+                return await ResponseWrapper<string>.FailAsync("Admin rolü değiştirilemez.");
+            }
+
+            var permissionToBeAssigned = updateRolePermissionsRequest.RoleClaims
+                .Where(rc => rc.IsAssignedToRole == true)
+                .ToList();
+
+            var allCurrentlyAssignedRoleClaims = await _roleManager
+                .GetClaimsAsync(roleInDb);
+
+            // var olan rol permissionları sil.
+            foreach (var claim in allCurrentlyAssignedRoleClaims)
+            {
+                await _roleManager.RemoveClaimAsync(roleInDb, claim);
+            }
+
+            // Ekle
+            foreach (var claim in permissionToBeAssigned)
+            {
+                var mappedRoleClaim = _mapper.Map<ApplicationRoleClaim>(claim);
+                await _context.RoleClaims.AddAsync(mappedRoleClaim);
+            }
+
+            await _context.SaveChangesAsync();
+            return await ResponseWrapper.SuccessAsync("İşlem başarılı");
+        }
+        return await ResponseWrapper.FailAsync("Rol bilgisi bulunamadı.");
+    }
+
+    private async Task<List<RoleClaimViewModel>> GetAllClaimsForRoleAsync(string roleId)
+    {
+        var roleClaims = await _context.RoleClaims
+            .Where(roleClaim => roleClaim.RoleId == roleId).ToListAsync();
+
+        if (roleClaims.Any())
+        {
+            var mappedRoleClaims = _mapper.Map<List<RoleClaimViewModel>>(roleClaims);
+            return mappedRoleClaims;
+        }
+        return new List<RoleClaimViewModel>(); // bir permission'a sahip değilse boş bir nesne gönder.
     }
 }

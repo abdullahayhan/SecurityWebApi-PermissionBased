@@ -2,7 +2,7 @@
 using Common.Responses.Wrappers;
 using MediatR;
 
-namespace Application.Features.User.Queries;
+namespace Application.Features.Identity.User.Queries;
 
 public record class GetRolesRequest(string UserId) : IRequest<IResponseWrapper>;
 
@@ -15,7 +15,7 @@ public class GetRolesRequestHandler : IRequestHandler<GetRolesRequest, IResponse
         _userService = userService;
     }
 
-    public async Task<IResponseWrapper> Handle(GetRolesRequest request, 
+    public async Task<IResponseWrapper> Handle(GetRolesRequest request,
         CancellationToken cancellationToken)
     {
         return await _userService.GetRolesAsync(request.UserId);

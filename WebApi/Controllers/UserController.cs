@@ -1,5 +1,5 @@
-﻿using Application.Features.User.Commands;
-using Application.Features.User.Queries;
+﻿using Application.Features.Identity.User.Commands;
+using Application.Features.Identity.User.Queries;
 using Common.Authorization;
 using Common.Requests.Identity;
 using Microsoft.AspNetCore.Mvc;

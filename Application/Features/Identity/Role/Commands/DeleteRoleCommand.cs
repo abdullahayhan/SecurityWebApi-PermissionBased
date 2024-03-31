@@ -2,7 +2,7 @@
 using Common.Responses.Wrappers;
 using MediatR;
 
-namespace Application.Features.Role.Commands;
+namespace Application.Features.Identity.Role.Commands;
 
 public record DeleteRoleCommand(string RoleId) : IRequest<IResponseWrapper>;
 

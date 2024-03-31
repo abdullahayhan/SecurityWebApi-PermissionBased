@@ -2,7 +2,7 @@
 using Common.Responses.Wrappers;
 using MediatR;
 
-namespace Application.Features.Role.Queries;
+namespace Application.Features.Identity.Role.Queries;
 
 public record GetRoleByIdRequest(string RoleId) : IRequest<IResponseWrapper>;
 

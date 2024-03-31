@@ -3,7 +3,7 @@ using Common.Requests.Identity;
 using Common.Responses.Wrappers;
 using MediatR;
 
-namespace Application.Features.User.Commands;
+namespace Application.Features.Identity.User.Commands;
 
 public record class UpdateUserCommand(UpdateUserRequest UpdateUserRequest) : IRequest<IResponseWrapper>;
 

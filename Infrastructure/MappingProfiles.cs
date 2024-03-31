@@ -10,5 +10,7 @@ public class MappingProfiles : Profile
 	{
 		CreateMap<ApplicationUser, UserResponse>();
 		CreateMap<ApplicationRole, RoleResponse>();
+		CreateMap<ApplicationRoleClaim, RoleClaimViewModel>().ReverseMap();
+		//CreateMap<RoleClaimViewModel, ApplicationRoleClaim>();
 	}
 }

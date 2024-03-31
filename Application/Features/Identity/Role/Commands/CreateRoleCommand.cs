@@ -3,9 +3,9 @@ using Common.Requests.Identity;
 using Common.Responses.Wrappers;
 using MediatR;
 
-namespace Application.Features.Role.Commands;
+namespace Application.Features.Identity.Role.Commands;
 
-public record CreateRoleCommand(CreateRoleRequest CreateRoleRequest) 
+public record CreateRoleCommand(CreateRoleRequest CreateRoleRequest)
     : IRequest<IResponseWrapper>;
 
 public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, IResponseWrapper>
@@ -17,7 +17,7 @@ public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, IResp
         _roleService = roleService;
     }
 
-    public async Task<IResponseWrapper> Handle(CreateRoleCommand request, 
+    public async Task<IResponseWrapper> Handle(CreateRoleCommand request,
         CancellationToken cancellationToken)
     {
         return await _roleService

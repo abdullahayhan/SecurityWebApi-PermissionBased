@@ -3,9 +3,9 @@ using Common.Requests.Identity;
 using Common.Responses.Wrappers;
 using MediatR;
 
-namespace Application.Features.User.Commands;
+namespace Application.Features.Identity.User.Commands;
 
-public record class UpdateUserRolesCommand(UpdateUserRolesRequest UpdateUserRolesRequest) 
+public record class UpdateUserRolesCommand(UpdateUserRolesRequest UpdateUserRolesRequest)
     : IRequest<IResponseWrapper>;
 
 public class UpdateUserRolesCommandHandler : IRequestHandler<UpdateUserRolesCommand, IResponseWrapper>

@@ -2,7 +2,7 @@
 using Common.Responses.Wrappers;
 using MediatR;
 
-namespace Application.Features.Identity.Queries;
+namespace Application.Features.Identity.Token.Queries;
 
 public class GetRefreshTokenQueryHandler : IRequestHandler<GetRefreshTokenQuery, IResponseWrapper>
 {

@@ -2,9 +2,9 @@
 using Common.Responses.Wrappers;
 using MediatR;
 
-namespace Application.Features.Role.Queries;
+namespace Application.Features.Identity.Role.Queries;
 
-public record class GetRolesRequest(string? RoleName) 
+public record class GetRolesRequest(string? RoleName)
     : IRequest<IResponseWrapper>;
 
 public class GetRolesRequestHandler : IRequestHandler<GetRolesRequest, IResponseWrapper>
