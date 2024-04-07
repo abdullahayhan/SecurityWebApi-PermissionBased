@@ -3,12 +3,12 @@
 public class CustomValidationException : Exception
 {
     public List<string> ErrorsMessage { get; set; } = new();
-    public string? FriendlyErrorsMessage { get; set; }
+    public string? Description { get; set; }
 
-    public CustomValidationException(List<string> errorsMessage, string? friendlyErrorsMessage)
-        : base(friendlyErrorsMessage)
+    public CustomValidationException(List<string> errorsMessage, string? description)
+        : base(description)
     {
         ErrorsMessage = errorsMessage;
-        FriendlyErrorsMessage = friendlyErrorsMessage;
+        Description = description;
     }
 }

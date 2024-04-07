@@ -1,5 +1,2 @@
 ﻿namespace Application.Pipelines;
-
-public interface IValidateMe
-{
-}
+public interface IValidateMe{}
