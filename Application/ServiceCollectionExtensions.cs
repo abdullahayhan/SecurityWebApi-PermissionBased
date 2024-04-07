@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Application.Pipelines;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace Application;
@@ -9,7 +11,8 @@ public static class ServiceCollectionExtensions
     {
         var assembly = Assembly.GetExecutingAssembly();
         return services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly))
-            .AddAutoMapper(typeof(MappingProfiles));
+            .AddAutoMapper(typeof(MappingProfiles))
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
     }
 }
 
