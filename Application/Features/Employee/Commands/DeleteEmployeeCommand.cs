@@ -1,11 +1,12 @@
-﻿using Application.Services;
+﻿using Application.Pipelines;
+using Application.Services;
 using Common.Responses.Wrappers;
 using MediatR;
 
 namespace Application.Features.Employee.Commands;
 
 public record class DeleteEmployeeCommand(int id)
-    : IRequest<IResponseWrapper>;
+    : IRequest<IResponseWrapper>, IValidateMe;
 
 
 public class DeleteEmployeeCommandHandler : IRequestHandler<DeleteEmployeeCommand, IResponseWrapper>
@@ -20,16 +21,17 @@ public class DeleteEmployeeCommandHandler : IRequestHandler<DeleteEmployeeComman
     public async Task<IResponseWrapper> Handle(DeleteEmployeeCommand request,
         CancellationToken cancellationToken)
     {
-        var employeeInDb = await _employeeService.GetEmployeeByIdAsync(request.id);
-        if (employeeInDb is not null)
-        {
+        //var employeeInDb = await _employeeService.GetEmployeeByIdAsync(request.id);
+        //if (employeeInDb is not null)
+        //{
+            var employeeInDb = await _employeeService.GetEmployeeByIdAsync(request.id);
             var employeeId = await _employeeService.DeleteEmployeeAsync(employeeInDb);
             return await ResponseWrapper<int>.SuccessAsync(employeeId,
                 "Employee entry deleted succesfly");
-        }
-        else
-        {
-            return ResponseWrapper.Fail("Employee does not exists.");
-        }
+        //}
+        //else
+        //{
+        //    return ResponseWrapper.Fail("Employee does not exists.");
+        //}
     }
 }

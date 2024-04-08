@@ -22,6 +22,7 @@ internal class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployee
             .MaximumLength(60);
 
         RuleFor(request => request.Email)
+            .EmailAddress()
             .NotEmpty().WithMessage("Employee Email zorunludur")
             .MaximumLength(100);
 

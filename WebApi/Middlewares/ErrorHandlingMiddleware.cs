@@ -1,5 +1,6 @@
 ﻿using Application.Exceptions;
 using Common.Responses;
+using Common.Responses.Wrappers;
 using System.Net;
 using System.Text.Json;
 
@@ -24,22 +25,19 @@ public class ErrorHandlingMiddleware
         {
             var response = httpContext.Response;
             response.ContentType = "application/json";
-            Error error = new();
+            var responseWrapper = await ResponseWrapper.FailAsync("Bir hata oluştu.");
 
             switch (ex)
             {
                 case CustomValidationException validationException:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    error.Description = validationException.Description;
-                    error.ErrorsMessage = validationException.ErrorsMessage;
                     break;
                 default:
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    error.Description = ex.Message; // ?? 
                     break;
             }
 
-            var result = JsonSerializer.Serialize(error);
+            var result = JsonSerializer.Serialize(responseWrapper);
             await response.WriteAsync(result);
         }
     }

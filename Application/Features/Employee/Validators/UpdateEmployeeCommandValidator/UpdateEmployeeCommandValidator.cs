@@ -6,14 +6,11 @@ namespace Application.Features.Employee.Validators.UpdateEmployeeCommandValidato
 
 public class UpdateEmployeeCommandValidator : AbstractValidator<UpdateEmployeeCommand>
 {
-    private readonly IEmployeeService _employeeService;
 
     public UpdateEmployeeCommandValidator(IEmployeeService employeeService)
     {
-        _employeeService = employeeService;
-
         RuleFor(command => command.UpdateEmployeeRequest)
-            .SetValidator(new UpdateEmployeeRequestValidator(_employeeService));
+            .SetValidator(new UpdateEmployeeRequestValidator(employeeService));
 
     }
 }

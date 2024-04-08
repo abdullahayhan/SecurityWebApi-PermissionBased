@@ -84,8 +84,8 @@ public class UserService : IUserService
             IsActive = createUserRequest.IsActive,
         };
 
-        if (createUserRequest.Password == createUserRequest.ConfirmPassword)
-        {
+        //if (createUserRequest.Password == createUserRequest.ConfirmPassword)
+        //{
             var passwordHash = new PasswordHasher<ApplicationUser>();
             newUser.PasswordHash = passwordHash.HashPassword(newUser, createUserRequest.Password!);
 
@@ -97,9 +97,9 @@ public class UserService : IUserService
                 return await ResponseWrapper<string>.SuccessAsync($"{newUser.FirstName} {newUser.LastName} registered succesfully.", "user registered succesfully");
             }
             return await ResponseWrapper.FailAsync(GetIdentityResultErrorDescriptions(identityResult));
-        }
+        //}
 
-        return await ResponseWrapper.FailAsync("Passwords are not matched.");
+        //return await ResponseWrapper.FailAsync("Passwords are not matched.");
     }
 
     public async Task<IResponseWrapper> GetAllUsersAsync()
@@ -150,7 +150,6 @@ public class UserService : IUserService
         }
         return await ResponseWrapper.FailAsync("User does not exist.");
     }
-
     public async Task<IResponseWrapper> UpdateUserAsync(UpdateUserRequest updateUserRequest)
     {
         var userInDb = await _userManager.FindByIdAsync(updateUserRequest.UserId!);
@@ -221,5 +220,16 @@ public class UserService : IUserService
             errorDescriptions.Add(error.Description);
         }
         return errorDescriptions;
+    }
+
+    public async Task<IResponseWrapper> GetUserByEmailAsync(string email)
+    {
+        var userInDb = await _userManager.FindByEmailAsync(email);
+        if (userInDb != null)
+        {
+            var mappedUser = _mapper.Map<UserResponse>(userInDb);
+            return await ResponseWrapper<UserResponse>.SuccessAsync(mappedUser);
+        }
+        return await ResponseWrapper.FailAsync("User bulunamadı.");
     }
 }

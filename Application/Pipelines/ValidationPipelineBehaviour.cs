@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions;
+using Common.Responses.Wrappers;
 using FluentValidation;
 using MediatR;
 
@@ -28,16 +29,20 @@ public class ValidationPipelineBehaviour<TRequest, TResponse> : IPipelineBehavio
                     .Select(validationResult => validationResult.ValidateAsync(context,
                     cancellationToken)));
 
-            var failures = validationResult.SelectMany(vr => vr.Errors)
-                .Where(failure => failure != null)
-                .ToList();
-
-            foreach (var failure in failures)
+            if (!validationResult.Any(vr => vr.IsValid)) // birden fazla validasyon var, en az biri valid değilse yazdır.
             {
-                errors.Add(failure.ErrorMessage);
-            }
+                var failures = validationResult.SelectMany(vr => vr.Errors)
+               .Where(failure => failure != null)
+               .ToList();
 
-            throw new CustomValidationException(errors,"One or more validation failure(s) occured."); // yalan geceler.
+                foreach (var failure in failures)
+                {
+                    errors.Add(failure.ErrorMessage);
+                }
+
+                return (TResponse)await ResponseWrapper.FailAsync(errors);
+                //throw new CustomValidationException(errors, "Bir veya daha fazla hata meydana geldi."); // yalan geceler.
+            }
         }
 
         return await next();

@@ -1,11 +1,15 @@
-﻿using Application.Services.Identity;
+﻿using Application.Pipelines;
+using Application.Services.Identity;
 using Common.Requests.Identity;
 using Common.Responses.Wrappers;
 using MediatR;
 
 namespace Application.Features.Identity.User.Commands;
 
-public record CreateUserCommand(CreateUserRequest CreateUserRequest) : IRequest<IResponseWrapper>;
+public record CreateUserCommand(CreateUserRequest CreateUserRequest) 
+    : IRequest<IResponseWrapper>
+      ,IValidateMe;
+
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, IResponseWrapper>
 {
