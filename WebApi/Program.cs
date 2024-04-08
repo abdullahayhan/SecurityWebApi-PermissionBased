@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Serilog;
 using WebApi;
 using WebApi.Middlewares;
 
@@ -23,6 +24,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.RegisterSwagger();
 
 builder.Services.AddInfrastructureDependencies();
+
+builder.Host.UseSerilog((context, loggerConfig) => loggerConfig
+        .WriteTo.Console()
+        .ReadFrom.Configuration(context.Configuration));
+
 var app = builder.Build();
 
 app.SeedDatabase();
@@ -33,6 +39,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

@@ -14,7 +14,8 @@ public static class ServiceCollectionExtensions
         return services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly))
             .AddAutoMapper(typeof(MappingProfiles))
             .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>))
+            .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehaviour<,>));
     }
 }
 
