@@ -41,18 +41,18 @@ public class TokenService : ITokenService
         // Check if Active 
         if (!user.IsActive)
         {
-            return await ResponseWrapper<TokenResponse>.FailAsync("User not active. Please contact the administrator");
+            return await ResponseWrapper<TokenResponse>.FailAsync("Kullanıcı aktif değil. Sistem yöneticiniz ile iletişime geçiniz.");
         }
         // Check email if confirmed
         if (!user.EmailConfirmed)
         {
-            return await ResponseWrapper<TokenResponse>.FailAsync("Email not confirmed");
+            return await ResponseWrapper<TokenResponse>.FailAsync("Email onaylı değil.");
         }
         // Check password
         var isPasswordValid = await _userManager.CheckPasswordAsync(user, tokenRequest.Password);
         if (!isPasswordValid)
         {
-            return await ResponseWrapper<TokenResponse>.FailAsync("Invalid Credentials");
+            return await ResponseWrapper<TokenResponse>.FailAsync("Geçersiz kimlik bilgileri");
         }
         // generate refresh token (refresh token database üzerinden tutulur.)
         user.RefreshToken = GenerateRefreshToken();
@@ -76,7 +76,7 @@ public class TokenService : ITokenService
     {
         if (refreshTokenRequest is null)
         {
-            return await ResponseWrapper<TokenResponse>.FailAsync("Invalid Client Token.");
+            return await ResponseWrapper<TokenResponse>.FailAsync("Geçersiz bilgi.");
         }
         var userPrincipal = GetPrincipalFromExpiredToken(refreshTokenRequest.Token);
         var userEmail = userPrincipal.FindFirstValue(ClaimTypes.Email);
@@ -84,11 +84,11 @@ public class TokenService : ITokenService
 
         if (user is null)
         {
-            return await ResponseWrapper<TokenResponse>.FailAsync("User Not Found.");
+            return await ResponseWrapper<TokenResponse>.FailAsync("Kullanıcı bulunamadı.");
         }
         if (user.RefreshToken != refreshTokenRequest.RefreshToken || user.RefreshTokenExpiryDate <= DateTime.Now)
         {
-            return await ResponseWrapper<TokenResponse>.FailAsync("Invalid Client Token.");
+            return await ResponseWrapper<TokenResponse>.FailAsync("Geçersiz bilgi.");
         }
 
         var token = GenerateEncryptedToken(GetSigningCredentials(), await GetClaimsAsync(user));
@@ -188,7 +188,7 @@ public class TokenService : ITokenService
             || !jwtSecurityToken.Header.Alg
                 .Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
         {
-            throw new SecurityTokenException("Invalid token");
+            throw new SecurityTokenException("Geçersiz bilgi.");
         }
 
         return principal;

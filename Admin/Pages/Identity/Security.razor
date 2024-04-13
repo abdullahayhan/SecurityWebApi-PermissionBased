@@ -1,0 +1,25 @@
+﻿<EditForm Model="@ChangeUserPasswordRequest" OnValidSubmit="ChangePasswordAsync">
+    <MudCard Elevation="25">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText>Şifre Değiştir</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string" @bind-Value="ChangeUserPasswordRequest.NewPassword" Margin="Margin.Dense" Label="Yeni Şifre" Variant="Variant.Text" InputType="_newPasswordInput" Adornment="Adornment.End" AdornmentIcon="@_newPasswordInputIcon" OnAdornmentClick="@(() => TogglePasswordVisibility(true))" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string" @bind-Value="ChangeUserPasswordRequest.ConfirmedNewPassword" Margin="Margin.Dense" Label="Yeni Şifre Onayı" Variant="Variant.Text" InputType="_newPasswordInput" Adornment="Adornment.End" AdornmentIcon="@_newPasswordInputIcon" OnAdornmentClick="@(() => TogglePasswordVisibility(true))" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" @bind-Value="ChangeUserPasswordRequest.CurrentPassword" Margin="Margin.Dense" Label="Mevcut Şifre" Variant="Variant.Text" InputType="_currentPasswordInput" Adornment="Adornment.End" AdornmentIcon="@_currentPasswordInputIcon" OnAdornmentClick="@(() => TogglePasswordVisibility(false))" />
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+        <MudCardActions Class="pb-4 pl-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" ButtonType="ButtonType.Submit" Class="ml-auto">Şifre Değiştir</MudButton>
+        </MudCardActions>
+    </MudCard>
+</EditForm>

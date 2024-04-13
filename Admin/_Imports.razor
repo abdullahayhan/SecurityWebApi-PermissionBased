@@ -1,0 +1,37 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using Admin.Services.Auth;
+@using Admin.Services.Interfaces;
+@using Blazored.LocalStorage;
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
+@using Admin
+@using Admin.Shared
+@using Admin.Shared.Components
+@using Admin.Shared.Components.Dialogs
+
+@using Admin.Pages.Auth
+@using Admin.Pages.Identity.Dialogs
+@using MudBlazor;
+
+@attribute [Authorize]
+@inject IAuthorizationService _authorizationService
+@inject ApplicationStateProvider _stateProvider
+@inject NavigationManager _navigationManager
+@inject ITokenService _tokenService
+@inject IUserService _userService
+@inject IRoleService _roleService
+
+@inject ISnackbar _snackBar
+@inject IDialogService _dialogService
+
+@inject HttpClient _httpClient
+@inject IHttpInterceptorService _interceptor
+@inject ILocalStorageService _localStorage;
+@inject IJSRuntime _jsRuntime;

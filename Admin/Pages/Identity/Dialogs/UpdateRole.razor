@@ -1,0 +1,33 @@
+﻿<EditForm Model="@UpdateRoleRequest" OnValidSubmit="SaveRoleAsync">
+    <MudDialog>
+        <TitleContent>
+            @{
+                <MudText Typo="Typo.h6">
+                    <MudIcon Icon="@Icons.Material.Filled.Update" Class="mr-3 mb-n1" />
+                    Rol Güncelle
+                </MudText>
+            }
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField Required @bind-Value="UpdateRoleRequest.Name"
+                                  Margin="Margin.Dense" Variant="Variant.Text" Label="Rol Adı" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Required @bind-Value="UpdateRoleRequest.Description"
+                                  Lines="3" Margin="Margin.Dense" Variant="Variant.Text" Label="Açıklama" />
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Filled" Class="mr-auto" OnClick="Cancel">Vazgeç</MudButton>
+            @{
+                <MudButton DisableElevation Variant="Variant.Filled"
+                           ButtonType="ButtonType.Submit" Color="Color.Success">Kaydet</MudButton>
+            }
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+

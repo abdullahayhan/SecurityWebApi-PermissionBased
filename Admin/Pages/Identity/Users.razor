@@ -1,0 +1,72 @@
+﻿@page "/pages/identity/users"
+@using Common.Authorization;
+@using Common.Responses.Identity;
+
+@attribute [MustHavePermission(AppFeature.Users, AppAction.Read)]
+
+<style>
+    .mud-table-container {
+        overflow: auto;
+    }
+</style>
+
+<Header OnClose="Cancel" Title="Kullanıcılar" Description="Kullanıcıları Yönet" />
+@if (!_loaded)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <MudTable Hover="true" Elevation="25" Items="_userList" Dense="true" @bind-user="_user">
+        <ToolBarContent>
+            <div class="justify-center mud-text-align-center">
+                @if (_canCreateUsers)
+                {
+                    <MudFab OnClick="(() => UserRegistrationDialog())" Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small"
+                            IconSize="Size.Medium" Class="mr-2" DisableElevation="true" aria-label="add" />
+                }
+            </div>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserResponse, object>(x => x.FirstName)">Ad</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserResponse, object>(x => x.LastName)">Soyad</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserResponse, object>(x => x.UserName)">Kullanıcı Adı</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserResponse, object>(x => x.Email)">Email</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserResponse, object>(x => x.EmailConfirmed)">Email Onayı</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserResponse, object>(x => x.IsActive)">Aktif</MudTableSortLabel></MudTh>
+            <MudTh Style="text-align:right">İşlemler</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Ad">
+                <MudHighlighter Text="@context.FirstName" />
+            </MudTd>
+            <MudTd DataLabel="Soyad">
+                <MudHighlighter Text="@context.LastName" />
+            </MudTd>
+            <MudTd DataLabel="Kullanıcı Adı">
+                <MudHighlighter Text="@context.UserName" />
+            </MudTd>
+            <MudTd DataLabel="Email">
+                <MudHighlighter Text="@context.Email" />
+            </MudTd>
+            <MudTd DataLabel="Email Onayı"><MudCheckBox @bind-Checked="@context.EmailConfirmed" ReadOnly Color="Color.Secondary"></MudCheckBox></MudTd>
+            <MudTd DataLabel="Aktif"><MudCheckBox @bind-Checked="@context.IsActive" ReadOnly Color="Color.Secondary"></MudCheckBox></MudTd>
+            <MudTd DataLabel="Aksiyonlar" Style="text-align:right">
+                <MudMenu DisableElevation="true" Dense="true" Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Color="Color.Secondary" TransformOrigin="Origin.BottomLeft" AnchorOrigin="Origin.BottomLeft">
+                    @if (_canUpdateUsers)
+                    {
+                        <MudMenuItem OnClick="(() => UpdatUserDialog(context.Id, context.Email))">Kullanıcı Güncelle</MudMenuItem>
+                    }
+                    
+                    @if (_canViewRoles)
+                    {
+                        <MudMenuItem OnClick="(() => ManageUserRoles(context.Id, context.Email))">Rolleri Yönet</MudMenuItem>
+                    }
+                </MudMenu>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+}

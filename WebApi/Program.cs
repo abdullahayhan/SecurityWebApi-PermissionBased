@@ -29,6 +29,14 @@ builder.Host.UseSerilog((context, loggerConfig) => loggerConfig
         .WriteTo.Console()
         .ReadFrom.Configuration(context.Configuration));
 
+builder.Services.AddCors(o =>
+     o.AddPolicy("CorsPolicy",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader())
+    );
+
 var app = builder.Build();
 
 app.SeedDatabase();
@@ -43,6 +51,8 @@ if (app.Environment.IsDevelopment())
 app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 

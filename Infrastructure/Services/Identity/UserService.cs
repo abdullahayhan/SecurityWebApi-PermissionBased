@@ -34,7 +34,7 @@ public class UserService : IUserService
 
         if (userInDb is null)
         {
-            return await ResponseWrapper.FailAsync("User bulunamadı.");
+            return await ResponseWrapper.FailAsync("Kullanıcı bulunamadı.");
         }
 
         if (changeUserPasswordRequest.NewPassword != changeUserPasswordRequest.ConfirmedNewPassword)
@@ -48,7 +48,7 @@ public class UserService : IUserService
 
         if (result.Succeeded)
         {
-            return await ResponseWrapper.SuccessAsync("User password updated.");
+            return await ResponseWrapper.SuccessAsync("Kullanıcı şifresi güncellendi.");
         }
 
         return await ResponseWrapper.FailAsync(GetIdentityResultErrorDescriptions(result));
@@ -60,14 +60,14 @@ public class UserService : IUserService
 
         if (userWithSameEmail is not null)
         {
-            return await ResponseWrapper.FailAsync("Email already taken.");
+            return await ResponseWrapper.FailAsync("Email başka bir kullanıcı tarafından kullanılmaktadır.");
         }
 
         var userWithSameUserName = await _userManager.FindByNameAsync(createUserRequest.UserName!);
 
         if (userWithSameUserName is not null)
         {
-            return await ResponseWrapper.FailAsync("UserName already taken.");
+            return await ResponseWrapper.FailAsync("Kullanıcı adı başka bir kullanıcı tarafından kullanılmaktadır.");
         }
 
         var userName = createUserRequest.Email![..createUserRequest.Email!.IndexOf('@')];
@@ -94,7 +94,7 @@ public class UserService : IUserService
             if (identityResult.Succeeded)
             {
                 await _userManager.AddToRoleAsync(newUser, AppRoles.Basic);
-                return await ResponseWrapper<string>.SuccessAsync($"{newUser.FirstName} {newUser.LastName} registered succesfully.", "user registered succesfully");
+                return await ResponseWrapper<string>.SuccessAsync($"{newUser.FirstName} {newUser.LastName} kullanıcısı başarıyla kaydedilmiştir.", "Kullanıcı kaydı başarılı");
             }
             return await ResponseWrapper.FailAsync(GetIdentityResultErrorDescriptions(identityResult));
         //}
@@ -111,7 +111,7 @@ public class UserService : IUserService
             return await ResponseWrapper<List<UserResponse>>.SuccessAsync(mappedUserList);
         }
 
-        return await ResponseWrapper.FailAsync("User not found");
+        return await ResponseWrapper.FailAsync("Kullanıcı bulunamadı.");
     }
 
     public async Task<IResponseWrapper> GetRolesAsync(string userId)
@@ -137,7 +137,7 @@ public class UserService : IUserService
             }
             return await ResponseWrapper<List<UserRoleViewModel>>.SuccessAsync(userRoleVMList);
         }
-        return await ResponseWrapper.FailAsync("User is not found");
+        return await ResponseWrapper.FailAsync("Kullanıcı bulunamadı.");
     }
 
     public async Task<IResponseWrapper> GetUserByIdAsync(string userId)
@@ -148,7 +148,7 @@ public class UserService : IUserService
             var mappedUser = _mapper.Map<UserResponse>(userInDb);
             return await ResponseWrapper<UserResponse>.SuccessAsync(mappedUser);
         }
-        return await ResponseWrapper.FailAsync("User does not exist.");
+        return await ResponseWrapper.FailAsync("Kullanıcı bulunamadı.");
     }
     public async Task<IResponseWrapper> UpdateUserAsync(UpdateUserRequest updateUserRequest)
     {
@@ -168,7 +168,7 @@ public class UserService : IUserService
             }
             return await ResponseWrapper.FailAsync(GetIdentityResultErrorDescriptions(result));
         }
-        return await ResponseWrapper.FailAsync("User not found.");
+        return await ResponseWrapper.FailAsync("Kullanıcı bulunamadı.");
     }
 
     public async Task<IResponseWrapper> UpdateUserRolesAsync(UpdateUserRolesRequest updateUserRolesRequest)
@@ -180,7 +180,7 @@ public class UserService : IUserService
         {
             if (userInDb.Email == AppCredentials.Email)
             {
-                return await ResponseWrapper.FailAsync("User roles update not permitted");
+                return await ResponseWrapper.FailAsync("Admin Kullanıcı rolü güncellenemez");
             }
             var currentlyUserRoles = await _userManager.GetRolesAsync(userInDb);
             var newUserRoles = updateUserRolesRequest.Roles
@@ -190,7 +190,7 @@ public class UserService : IUserService
             var currentLoggedInUser = await _userManager.FindByIdAsync(_currentUserService.UserId);
             if (currentLoggedInUser is null)
             {
-                return await ResponseWrapper.FailAsync("User does not exist.");
+                return await ResponseWrapper.FailAsync("Kullanıcı bulunamadı.");
             }
             if (await _userManager.IsInRoleAsync(currentLoggedInUser, AppRoles.Admin))
             {
@@ -202,14 +202,14 @@ public class UserService : IUserService
 
                     if (newRoleUpdateResult.Succeeded)
                     {
-                        return await ResponseWrapper.SuccessAsync("user roles updated succesfully.");
+                        return await ResponseWrapper.SuccessAsync("Kullanıcı rolü başarıyla güncellenmiştir.");
                     }
                     return await ResponseWrapper.FailAsync(GetIdentityResultErrorDescriptions(newRoleUpdateResult));
                 }
                 return await ResponseWrapper.FailAsync(GetIdentityResultErrorDescriptions(resultRemoveAllRoles));
             }
         }
-        return await ResponseWrapper.FailAsync("User is not found");
+        return await ResponseWrapper.FailAsync("Kullanıcı bulunamadı.");
     }
 
     private List<string> GetIdentityResultErrorDescriptions(IdentityResult identityResult)
@@ -230,6 +230,6 @@ public class UserService : IUserService
             var mappedUser = _mapper.Map<UserResponse>(userInDb);
             return await ResponseWrapper<UserResponse>.SuccessAsync(mappedUser);
         }
-        return await ResponseWrapper.FailAsync("User bulunamadı.");
+        return await ResponseWrapper.FailAsync("Kullanıcı bulunamadı.");
     }
 }

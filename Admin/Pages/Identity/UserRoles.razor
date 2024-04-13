@@ -1,0 +1,50 @@
+﻿@page "/pages/identity/user-roles/{UserId}"
+@using Common.Authorization;
+@using Common.Responses.Identity;
+
+@attribute [MustHavePermission(AppFeature.Roles, AppAction.Read)]
+
+<style>
+    .mud-table-container {
+        overflow: auto;
+    }
+</style>
+
+<Header OnClose="Cancel" Title="@_title" Description="@_descr" />
+@if (!_loaded)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <MudTable Hover="true" Elevation="25" Items="_userRolesList" Dense="true" @bind-userRole="_userRole">
+        <ToolBarContent>
+            <div class="justify-center mud-text-align-center">
+                @if (_canUpdateUserRoles)
+                {
+                    <MudButton DisableElevation Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="UpdateUserRolesAsync" ButtonType="ButtonType.Submit">Kullanıcı rol güncelle</MudButton>
+                }
+            </div>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserRoleViewModel, object>(x => x.RoleName)">Rol Adı</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserRoleViewModel, object>(x => x.RoleDescription)">Açıklama</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<UserRoleViewModel, object>(x => x.IsAssignedToUser)">Atanmış mı ?</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Rol Adı">
+                @context.RoleName
+            </MudTd>
+            <MudTd DataLabel="Açıklama">
+                @context.RoleDescription
+            </MudTd>
+            <MudTd DataLabel="Rol">
+                <MudCheckBox @bind-Checked="@context.IsAssignedToUser" Disabled="@(!_canUpdateUserRoles)" Color="Color.Secondary">
+                </MudCheckBox>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}

@@ -1,0 +1,79 @@
+﻿@page "/pages/identity/roles"
+
+@using Common.Authorization;
+@using Common.Responses.Identity;
+@using System.ComponentModel.Design
+
+@attribute [MustHavePermission(AppFeature.Roles, AppAction.Read)]
+
+<style>
+    .mud-table-container {
+        overflow: auto;
+    }
+</style>
+
+<Header OnClose="Cancel" Title="Roller" Description="Rolleri Yönet." />
+@if (!_loaded)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <MudTable Hover="true" Elevation="25" Items="_roleList" Dense="true" @bind-role="_role">
+        <ToolBarContent>
+            <div class="justify-center mud-text-align-center">
+                @if (_canCreateRoles)
+                {
+                    <MudFab OnClick="(() => CreateRoleDialog())" Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" Size="Size.Small"
+                    IconSize="Size.Medium" Class="mr-2" DisableElevation="true" aria-label="add" />
+                }
+            </div>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<RoleResponse, object>(x => x.Name)">Rol</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<RoleResponse, object>(x => x.Description)">Açıklama</MudTableSortLabel></MudTh>
+            <MudTh Style="text-align:right">İşlemler</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Role">
+                <MudHighlighter Text="@context.Name"/>
+            </MudTd>
+            <MudTd DataLabel="Description">
+                <MudHighlighter Text="@context.Description"/>
+            </MudTd>
+            <MudTd DataLabel="Actions" Style="text-align: right">
+                @if (_canViewRoleClaims || _canUpdateRoles || _canDeleteRoles)
+                {
+                    <MudMenu DisableElevation="true" Dense="true" Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Color="Color.Secondary" TransformOrigin="Origin.BottomCenter" AnchorOrigin="Origin.BottomCenter">
+                        @if (_canViewRoleClaims)
+                        {
+                            <MudMenuItem @onclick="@(() => ManagePermissions(@context.Id))">İzinler</MudMenuItem>
+                        }
+                        @if (_canUpdateRoles)
+                        {
+                            <MudMenuItem @onclick="@(() => UpdateRoleDialog(@context.Id))">Güncelle</MudMenuItem>
+                        }
+                        @if (_canDeleteRoles)
+                        {
+                            <MudMenuItem @onclick="@(() => Delete(@context.Id))">Sil</MudMenuItem>
+                        }
+                    </MudMenu>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Filled"
+                               DisableElevation="true"
+                               StartIcon="@Icons.Material.Filled.DoNotTouch"
+                               IconColor="Color.Secondary"
+                               Size="Size.Small"
+                               Color="Color.Surface">
+                        İzin verilen aksiyon bulunmamakta.
+                    </MudButton>
+                }
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}

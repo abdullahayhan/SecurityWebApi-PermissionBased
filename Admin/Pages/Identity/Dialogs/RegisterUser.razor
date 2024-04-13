@@ -1,0 +1,50 @@
+﻿<EditForm Model="@_userRegistration" OnValidSubmit="SubmitAsync">
+    <MudDialog>
+        <TitleContent>
+            @{
+                <MudText Typo="Typo.h6">
+                    <MudIcon Icon="@Icons.Material.Filled.VerifiedUser" Class="mr-3 mb-n1" />
+                    Kullanıcı Kaydet
+                </MudText>
+            }
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudTextField Required RequiredError="Zorunlu" Margin="Margin.Dense" Variant="Variant.Text" @bind-Value="_userRegistration.UserName" Label="Kullanıcı Adı" />
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudTextField Required RequiredError="Zorunlu" Margin="Margin.Dense" Variant="Variant.Text" @bind-Value="_userRegistration.FirstName" Label="Ad" />
+
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudTextField Required RequiredError="Zorunlu" Margin="Margin.Dense" Variant="Variant.Text" @bind-Value="_userRegistration.LastName" Label="Soyad" />
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudTextField Required RequiredError="Zorunlu" InputType="InputType.Email" Margin="Margin.Dense" Variant="Variant.Text" 
+                    @bind-Value="_userRegistration.Email" Label="Email" />
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudTextField Required RequiredError="Zorunlu" Margin="Margin.Dense" Variant="Variant.Text" InputType="@_passwordInput" Adornment="Adornment.End" 
+                        AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" 
+                        @bind-Value="_userRegistration.Password" Label="Şifre" />
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudTextField Required RequiredError="Zorunlu" Margin="Margin.Dense" Variant="Variant.Text" InputType="InputType.Password" @bind-Value="_userRegistration.ConfirmPassword" Label="Şifre Onay" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="6">
+                    <MudCheckBox @bind-Checked="@_userRegistration.IsActive" Label="Aktif Mi?" Color="Color.Primary"></MudCheckBox>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="6">
+                    <MudCheckBox @bind-Checked="@_userRegistration.AutoConfirmEmail" Label="Otomatik mail onayı?" Color="Color.Primary"></MudCheckBox>
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Filled" Class="mr-auto" OnClick="Cancel">Vazgeç</MudButton>
+            @{
+                <MudButton DisableElevation Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Success">Kaydet</MudButton>
+            }
+        </DialogActions>
+    </MudDialog>
+</EditForm>

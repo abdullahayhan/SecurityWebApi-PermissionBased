@@ -1,0 +1,32 @@
+﻿<EditForm Model="@UpdateUserRequest" OnValidSubmit="UpdateUserAsync">
+    <MudDialog>
+        <TitleContent>
+            @{
+                <MudText Typo="Typo.h6">
+                    <MudIcon Icon="@Icons.Material.Filled.SystemSecurityUpdateWarning" Class="mr-3 mb-n1" />
+                    Kullanıcı Güncelle
+                </MudText>
+            }
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudTextField Required RequiredError="Zorunlu" Margin="Margin.Dense" Variant="Variant.Text" @bind-Value="UpdateUserRequest.FirstName" Label="Ad" />
+
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudTextField Required RequiredError="Zorunlu" Margin="Margin.Dense" Variant="Variant.Text" @bind-Value="UpdateUserRequest.LastName" Label="Soyad" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="6">
+                    <MudCheckBox @bind-Checked="@UpdateUserRequest.IsActive" Label="Aktif Mi?" Color="Color.Primary"></MudCheckBox>
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Filled" Class="mr-auto" OnClick="Cancel">Vazgeç</MudButton>
+            @{
+                <MudButton DisableElevation Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Success">Güncelle</MudButton>
+            }
+        </DialogActions>
+    </MudDialog>
+</EditForm>

@@ -1,0 +1,25 @@
+﻿<MudCard Elevation="0">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-2">@Title</MudText>
+            <MudText Color="Color.Surface" Class="mb-1">@Description</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudTooltip Text="Geri" Delay="0" Placement="Placement.Start">
+                <MudIconButton OnClick="@CloseClicked" Class="mt-4 me-2" Icon="@Icons.Material.Filled.Close" Color="Color.Error" />
+            </MudTooltip>
+        </CardHeaderActions>
+    </MudCardHeader>
+</MudCard>
+
+@code
+{
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Description { get; set; } = string.Empty;
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    protected async Task CloseClicked()
+    {
+        await OnClose.InvokeAsync();
+    }
+}

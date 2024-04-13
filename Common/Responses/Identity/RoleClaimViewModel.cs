@@ -2,9 +2,9 @@
 
 public class RoleClaimViewModel
 {
-    public required string RoleId { get; set; }
-    public required string ClaimType { get; set; }
-    public required string ClaimValue { get; set; }
+    public  string RoleId { get; set; }
+    public  string ClaimType { get; set; }
+    public  string ClaimValue { get; set; }
     public string? Description { get; set; }
     public string? Group { get; set; }
     public bool IsAssignedToRole { get; set; }

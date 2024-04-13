@@ -1,0 +1,26 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Delete" Class="mr-3 mb-n1" />
+            Silme Onayı
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>@ConfirmationMessage</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Vazgeç</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="Submit">Onayla</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string ConfirmationMessage { get; set; }
+
+    void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+    void Cancel() => MudDialog.Cancel();
+}

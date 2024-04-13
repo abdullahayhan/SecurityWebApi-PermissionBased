@@ -18,7 +18,7 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
                     var result = await userService.GetUserByEmailAsync(email);
                     return !result.IsSuccessful;
                 })
-                .WithMessage("Email is taken.");
+                .WithMessage("Email'e ait bir kayıt bulunmaktadır.");
 
         RuleFor(request => request.FirstName)
             .NotEmpty()
@@ -41,6 +41,6 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 
         RuleFor(request => request.ConfirmPassword)
             .Must((req, confirmed) => req.Password == confirmed)
-            .WithMessage("Passwords do not match.");
+            .WithMessage("Şifreler aynı olmalıdır.");
     }
 }

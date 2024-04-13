@@ -1,0 +1,48 @@
+﻿@page "/pages/auth/login"
+@layout MainLayout
+@attribute [AllowAnonymous]
+
+<MudCard Outlined="true">
+    <MudCardContent>
+        <EditForm Model="@_tokenRequest" OnValidSubmit="SubmitAsync">
+            <MudGrid>
+                <MudHidden Breakpoint="Breakpoint.Xs">
+                    <MudItem xs="12" Class="mt-4">
+                        <div class="d-flex justify-center">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">API - PORTAL</MudText>
+                        </div>
+                    </MudItem>
+                </MudHidden>
+                <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+                    <MudItem xs="12" Class="mt-4">
+                        <div class="d-flex justify-center">
+                            <MudText Typo="Typo.h6" Color="Color.Primary">API</MudText>
+                        </div>
+                    </MudItem>
+                </MudHidden>
+
+                <DataAnnotationsValidator />
+                <MudItem xs="12">
+                    <div class="d-flex justify-center">
+                        <MudText Typo="Typo.subtitle1" Color="Color.Primary">Lütfen devam etmek için giriş yapınız.</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="E-mail" Variant="Variant.Text"
+                                  @bind-Value="_tokenRequest.Email" For="@(() => _tokenRequest.Email)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Label="Şifre" Variant="Variant.Text"
+                                  @bind-Value="_tokenRequest.Password" For="@(() => _tokenRequest.Password)"
+                                  InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+                </MudItem>
+                <MudItem xs="12" Class="d-flex justify-center">
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width: 100%;">Giriş Yap</MudButton>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudButton OnClick="FillAdministratorCredentials">Admin Giriş Bilgileri</MudButton>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </MudCardContent>
+</MudCard>

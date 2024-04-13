@@ -1,0 +1,57 @@
+﻿@page "/pages/identity/role-permissions/{RoleId}"
+
+@using Common.Authorization;
+@using Common.Responses.Identity;
+@using System.ComponentModel.Design
+
+@attribute [MustHavePermission(AppFeature.RoleClaims, AppAction.Read)]
+
+<Header OnClose="Cancel" Title="@_title" Description="@_descr" />
+@if (!_loaded)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <MudTabs Elevation="25" Rounded="true" Centered="true" ApplyEffectsToContainer="true" AlwaysShowScrollButtons="true">
+        @foreach (var group in RoleClaimsGrouped.Keys)
+        {
+            var assignedRoleClaimsInGroup = RoleClaimsGrouped[group].Where(c => c.IsAssignedToRole).ToList();
+            var allRoleClaimsInGroup = RoleClaimsGrouped[group].ToList();
+
+            <MudTabPanel Text="@group" BadgeData="@($"{assignedRoleClaimsInGroup.Count}/{allRoleClaimsInGroup.Count}")" Style="padding-right: 43px;" BadgeColor="@GetGroupBadgeColor(assignedRoleClaimsInGroup.Count, allRoleClaimsInGroup.Count)">
+                <MudTable Hover="true" Elevation="25" Items="@allRoleClaimsInGroup" Dense="true" Bordered="false" Striped="true" @bind-roleClaims="_roleClaimResponse" @bind-SelectedItem="_selectedRoleClaimViewModel">
+                    <ToolBarContent>
+                        @if (_canUpdateRolePermissions)
+                        {
+                            <div class="justify-center mud-text-align-center">
+                                <MudButton DisableElevation Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="UpdateRolePermissionsAsync" ButtonType="ButtonType.Submit">Rol İzinlerini Güncelle</MudButton>
+                            </div>
+                        }
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh><MudTableSortLabel SortBy="new Func<RoleClaimViewModel, object>(x => x.ClaimType)">Tip</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<RoleClaimViewModel, object>(x => x.ClaimValue)">İzin ismi</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<RoleClaimViewModel, object>(x => x.Description)">Açıklaması</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<RoleClaimViewModel, object>(x => x.IsAssignedToRole)">Atanmış mı ?</MudTableSortLabel></MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Type">@context.ClaimType</MudTd>
+                        <MudTd DataLabel="Permission Name">
+                            <MudHighlighter Text="@context.ClaimValue" />
+                        </MudTd>
+                        <MudTd DataLabel="Açıklama">
+                            <MudHighlighter Text="@context.Description" />
+                        </MudTd>
+                        <MudTd DataLabel="Is Assigned">
+                            <MudCheckBox @bind-Checked="@context.IsAssignedToRole" Disabled="@(!_canUpdateRolePermissions)" Color="Color.Secondary" />
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </MudTabPanel>
+        }
+    </MudTabs>
+}

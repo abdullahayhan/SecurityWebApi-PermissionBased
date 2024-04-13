@@ -1,0 +1,38 @@
+﻿<MudGrid>
+    <MudItem xs="12" sm="4" md="3">
+        <MudCard Elevation="25">
+            <MudCardContent>
+                <div class="d-flex justify-center mb-4">
+                    <MudAvatar Color="Color.Secondary" Style="height:200px; width:200px;">@_firstLetterOfFirstName</MudAvatar>
+                </div>
+                <MudText Typo="Typo.h6" Align="Align.Center">@UpdateUserRequest.FirstName @UpdateUserRequest.LastName</MudText>
+                <MudText Align="Align.Center">@_email</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="8" md="9">
+        <EditForm Model="@UpdateUserRequest" OnValidSubmit="UpdateUserAsync">
+            <MudCard Elevation="25">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText>Profil Detayı</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="@UpdateUserRequest.FirstName" Margin="Margin.Dense" For="@(() => UpdateUserRequest.FirstName)" Label="Ad" Required RequiredError="Zorunlu" Variant="Variant.Text" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="@UpdateUserRequest.LastName" Margin="Margin.Dense" For="@(() => UpdateUserRequest.LastName)" Label="Soyad" Required RequiredError="Zorunlu" Variant="Variant.Text" />
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+                <MudCardActions Class="pb-4 pl-4">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" Class="ml-auto" ButtonType="ButtonType.Submit">Kaydet</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+
+    </MudItem>
+</MudGrid>

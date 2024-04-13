@@ -1,11 +1,14 @@
-﻿using Application.Services.Identity;
+﻿using Application.Pipelines;
+using Application.Services.Identity;
 using Common.Requests.Identity;
 using Common.Responses.Wrappers;
 using MediatR;
 
 namespace Application.Features.Identity.User.Commands;
 
-public record class UpdateUserCommand(UpdateUserRequest UpdateUserRequest) : IRequest<IResponseWrapper>;
+public record class UpdateUserCommand(UpdateUserRequest UpdateUserRequest) 
+    : IRequest<IResponseWrapper>
+     ,IValidateMe;
 
 
 public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, IResponseWrapper>
