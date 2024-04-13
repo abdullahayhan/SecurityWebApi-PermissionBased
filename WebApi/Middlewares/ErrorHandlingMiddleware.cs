@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions;
+using Common.Responses.Wrappers;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.Features;
@@ -80,7 +81,7 @@ public class ErrorHandlingMiddleware
         try
         {
             _logger.LogInformation("Starting request {@RequestId},{@RequestName}, {@DateTime}, {@IpAddress}", requestId,context.Request.Path, DateTime.UtcNow, IpAddressHelper.GetIpAddress(context.Connection.RemoteIpAddress));
-
+            var response;
             HtmlSanitizer sanitizer = new();
 
             if (context.Request.Path.Value is not null)
@@ -98,17 +99,10 @@ public class ErrorHandlingMiddleware
                         IpAddressHelper.GetIpAddress(context.Connection.RemoteIpAddress),
                         DateTime.Now);
 
-                    ProblemDetails details = new()
-                    {
-                        Status = (int)HttpStatusCode.Forbidden,
-                        Title = "Server Refused",
-                        Detail = $"Rededildi. Hata takip numaranız : {requestId}",
-                    };
-
                     context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
 
                     context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsJsonAsync(details);
+                    await context.Response.WriteAsJsonAsync(ResponseWrapper.Fail("İşlem Reddedildi"));
                     return;
                 }
             }
@@ -128,17 +122,11 @@ public class ErrorHandlingMiddleware
                         IpAddressHelper.GetIpAddress(context.Connection.RemoteIpAddress),
                         DateTime.Now);
 
-                    ProblemDetails details = new()
-                    {
-                        Status = (int)HttpStatusCode.Forbidden,
-                        Title = "Server Refused",
-                        Detail = $"Rededildi. Hata takip numaranız : {requestId}",
-                    };
 
                     context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
 
                     context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsJsonAsync(details);
+                    await context.Response.WriteAsJsonAsync(ResponseWrapper.Fail("İşlem Reddedildi"));
                     return;
                 }
             }
@@ -148,7 +136,7 @@ public class ErrorHandlingMiddleware
             using (var streamReader = new StreamReader
               (context.Request.Body, Encoding.UTF8, leaveOpen: true))
             {
-                if (!context.Request.Path.Value.Contains("api/mail/send"))
+                if (!context.Request!.Path.Value.Contains("api/mail/send"))
                 {
                     var body = Regex.Unescape((await streamReader.ReadToEndAsync()).Replace("\r\n", "\n"));
                     var sanitizedBody = Regex.Unescape(sanitizer.Sanitize(body));
@@ -162,18 +150,11 @@ public class ErrorHandlingMiddleware
                             GetRawLog(context.Request).Result,
                             IpAddressHelper.GetIpAddress(context.Connection.RemoteIpAddress),
                             DateTime.Now);
-                        
-                        ProblemDetails details = new()
-                        {
-                            Status = (int)HttpStatusCode.Forbidden,
-                            Title = "Server Refused",
-                            Detail = $"Rededildi. Hata takip numaranız : {requestId}",
-                        };
-
+                      
                         context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
 
                         context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsJsonAsync(details);
+                        await context.Response.WriteAsJsonAsync(ResponseWrapper.Fail("İşlem Reddedildi"));
                         return;
                     }
                 }
@@ -199,17 +180,10 @@ public class ErrorHandlingMiddleware
                 IpAddressHelper.GetIpAddress(context.Connection.RemoteIpAddress),
                 DateTime.Now);
 
-            ProblemDetails details = new()
-            {
-                Status = (int)HttpStatusCode.InternalServerError,
-                Title = "Server Error",
-                Detail = $"Bir hata oluştu. Hata takip numaranız : {requestId}",
-            };
-
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsJsonAsync(details);
+            await context.Response.WriteAsJsonAsync(ResponseWrapper.Fail($"Bir hata oluştu. Hata takip numaranız : {requestId}"));
         }
 
     }

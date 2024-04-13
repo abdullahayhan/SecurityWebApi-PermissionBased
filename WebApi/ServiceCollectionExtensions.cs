@@ -39,12 +39,14 @@ namespace WebApi
                 .AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>()
                 .AddIdentity<ApplicationUser, ApplicationRole>(options =>
                     {
-                        options.Password.RequiredLength = 6;
+                        options.Password.RequiredLength = 8;
                         options.Password.RequireDigit = false;
                         options.Password.RequireLowercase = false;
                         options.Password.RequireNonAlphanumeric = false;
                         options.Password.RequireUppercase = false;
                         options.User.RequireUniqueEmail = true;
+                        options.Lockout.DefaultLockoutTimeSpan = DateTime.UtcNow.AddDays(1);
+                        options.Lockout.MaxFailedAccessAttempts = 3; // 3 kere yanlış girişten sonra kitle.
                     })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
