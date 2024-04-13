@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace WebApi.Controllers;
 
+[EnableRateLimiting("token")]
 [ApiController]
 public class AppBaseController<T> : ControllerBase
 {

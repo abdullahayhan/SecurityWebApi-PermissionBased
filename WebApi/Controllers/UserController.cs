@@ -8,7 +8,6 @@ using WebApi.Attributes;
 namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     public class UserController : AppBaseController<UserController>
     {
         [MustPermission(AppFeature.Users, AppAction.Create)]
