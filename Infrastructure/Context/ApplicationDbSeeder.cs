@@ -116,6 +116,7 @@ public class ApplicationDbSeeder
             PhoneNumberConfirmed = true,
             NormalizedEmail = AppCredentials.Email.ToUpperInvariant(),
             NormalizedUserName = adminUserName.ToUpperInvariant(),
+            LockoutEnabled= true,
             IsActive = true
         };
 

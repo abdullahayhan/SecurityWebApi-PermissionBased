@@ -4,13 +4,13 @@ using Common.Requests.Identity;
 using Common.Responses;
 using Common.Responses.Wrappers;
 using Infrastructure.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Services.Identity;
 
@@ -19,14 +19,17 @@ public class TokenService : ITokenService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly AppConfiguration _appConfiguration;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
     public TokenService(UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
-        IOptions<AppConfiguration> appConfiguration)
+        IOptions<AppConfiguration> appConfiguration,
+        SignInManager<ApplicationUser> signInManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _appConfiguration = appConfiguration.Value;
+        _signInManager = signInManager;
     }
 
     public async Task<ResponseWrapper<TokenResponse>> GetTokenAsync(TokenRequest tokenRequest)
@@ -49,27 +52,37 @@ public class TokenService : ITokenService
             return await ResponseWrapper<TokenResponse>.FailAsync("Email onaylı değil.");
         }
         // Check password
-        var isPasswordValid = await _userManager.CheckPasswordAsync(user, tokenRequest.Password);
-        if (!isPasswordValid)
+        var result = await _signInManager.CheckPasswordSignInAsync(user, 
+            tokenRequest.Password, 
+            lockoutOnFailure: true);
+
+        if (result.Succeeded)
+        {
+            // generate refresh token (refresh token database üzerinden tutulur.)
+            user.RefreshToken = GenerateRefreshToken();
+            user.RefreshTokenExpiryDate = DateTime.Now.AddDays(7);
+            // update user
+            await _userManager.UpdateAsync(user);
+            // GENERATE NEW TOKEN
+            var token = await GenerateJWTAsync(user);
+
+            var response = new TokenResponse
+            {
+                Token = token,
+                RefreshToken = user.RefreshToken,
+                RefreshTokenExpiryTime = user.RefreshTokenExpiryDate
+            };
+
+            return ResponseWrapper<TokenResponse>.Success(response);
+        }
+        else if (result.IsLockedOut)
+        {
+            return await ResponseWrapper<TokenResponse>.FailAsync("Hesabınız bloke olmuştur. Lütfen daha sonra tekrar deneyiniz.");
+        }
+        else
         {
             return await ResponseWrapper<TokenResponse>.FailAsync("Geçersiz kimlik bilgileri");
         }
-        // generate refresh token (refresh token database üzerinden tutulur.)
-        user.RefreshToken = GenerateRefreshToken();
-        user.RefreshTokenExpiryDate = DateTime.Now.AddDays(7);
-        // update user
-        await _userManager.UpdateAsync(user);
-        // GENERATE NEW TOKEN
-        var token = await GenerateJWTAsync(user);
-
-        var response = new TokenResponse
-        {
-            Token = token,
-            RefreshToken = user.RefreshToken,
-            RefreshTokenExpiryTime = user.RefreshTokenExpiryDate
-        };
-
-        return ResponseWrapper<TokenResponse>.Success(response);
     }
 
     public async Task<ResponseWrapper<TokenResponse>> GetRefreshToken(RefreshTokenRequest refreshTokenRequest)
