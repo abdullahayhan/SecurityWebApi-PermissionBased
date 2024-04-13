@@ -81,7 +81,6 @@ public class ErrorHandlingMiddleware
         try
         {
             _logger.LogInformation("Starting request {@RequestId},{@RequestName}, {@DateTime}, {@IpAddress}", requestId,context.Request.Path, DateTime.UtcNow, IpAddressHelper.GetIpAddress(context.Connection.RemoteIpAddress));
-            var response;
             HtmlSanitizer sanitizer = new();
 
             if (context.Request.Path.Value is not null)
