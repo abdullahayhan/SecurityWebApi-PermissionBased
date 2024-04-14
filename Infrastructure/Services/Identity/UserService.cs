@@ -50,6 +50,10 @@ public class UserService : IUserService
         {
             return await ResponseWrapper.SuccessAsync("Kullanıcı şifresi güncellendi.");
         }
+        else if (result.Errors.Any(err => err.Code == "PasswordMismatch"))
+        {
+            return await ResponseWrapper.FailAsync("Mevcut şifre yanlış.");
+        }
 
         return await ResponseWrapper.FailAsync(GetIdentityResultErrorDescriptions(result));
     }

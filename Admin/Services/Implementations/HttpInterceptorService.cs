@@ -26,7 +26,6 @@ namespace Admin.Services.Implementations
         public async Task InterceptBeforeHttpAsync(object sender, HttpClientInterceptorEventArgs e)
         {
             var absPath = e.Request.RequestUri.AbsolutePath;
-            //To Do: User registration need to be bipassed as well. Update register route.
             if (!absPath.Contains("token"))
             {
                 try
@@ -40,7 +39,7 @@ namespace Admin.Services.Implementations
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    _snackBar.Add("You are Logged Out.", Severity.Error);
+                    _snackBar.Add("Oturumunuz kapatılmıştır.", Severity.Error);
                     await _tokenService.Logout();
                     _navigationManager.NavigateTo("/");
                 }

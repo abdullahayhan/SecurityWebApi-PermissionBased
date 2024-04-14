@@ -79,7 +79,7 @@ namespace Admin.Services.Implementations
 
             if (!result.IsSuccessful)
             {
-                throw new ApplicationException("Something went wrong during the refresh token action");
+                throw new ApplicationException("Oturum yenileme sırasında bir şeyler ters gitti.");
             }
 
             token = result.ResponseData.Token;

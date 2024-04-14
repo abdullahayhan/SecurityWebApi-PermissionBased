@@ -1,4 +1,5 @@
-﻿using Common.Requests.Identity;
+﻿using Admin.Extensions;
+using Common.Requests.Identity;
 using MudBlazor;
 
 namespace Admin.Pages.Identity
@@ -14,12 +15,20 @@ namespace Admin.Pages.Identity
         private bool _newPasswordVisibility;
         private InputType _newPasswordInput = InputType.Password;
         private string _newPasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+        protected override async Task OnInitializedAsync()
+        {
+            var state = await _stateProvider.GetAuthenticationStateAsync();
+            var user = state.User;
+            ChangeUserPasswordRequest.UserId = user.GetUserId();
+        }
+
         private async Task ChangePasswordAsync()
         {
             var response = await _userService.ChangePasswordAsync(ChangeUserPasswordRequest);
             if (response.IsSuccessful)
             {
-                _snackBar.Add("Password Changed!", Severity.Success);
+                _snackBar.Add("Şifre başarıyla değiştirilmiştir!", Severity.Success);
                 Reset();
             }
             else

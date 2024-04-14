@@ -54,7 +54,7 @@ namespace Admin.Pages.Identity
         {
             if (email.Equals(AppCredentials.Email, StringComparison.CurrentCultureIgnoreCase))
             {
-                _snackBar.Add("Admin kullanıcısının profili düzenlenemez.", Severity.Error);
+                _snackBar.Add("Admin kullanıcısının rolü düzenlenemez.", Severity.Error);
             }
             else {
                 _navigationManager.NavigateTo($"/pages/identity/user-roles/{userId}");            

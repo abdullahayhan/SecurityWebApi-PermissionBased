@@ -43,8 +43,8 @@ namespace Admin.Pages.Identity
             if (response.IsSuccessful)
             {
                 _user = response.ResponseData;
-                _title = $"{_user.FirstName} {_user.LastName}";
-                _descr = $"Manage {_user.FirstName} {_user.LastName}'s roles.";
+                _title = $"{_user.FirstName} {_user.LastName} Rol Bilgisi";
+                _descr = $"{_user.FirstName} {_user.LastName} kullanıcısına ait rolleri yönet!";
             }
         }
 

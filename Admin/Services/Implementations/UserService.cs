@@ -19,15 +19,10 @@ namespace Admin.Services.Implementations
             _apiEndpoints = apiEndpoints;
         }
 
+
         public async Task<IResponseWrapper> ChangePasswordAsync(ChangeUserPasswordRequest request)
         {
             var response = await _httpClient.PutAsJsonAsync(_apiEndpoints.UserEndpoints.ChangePassword, request);
-            return await response.WrapResponse();
-        }
-
-        public async Task<IResponseWrapper> ChangeUserStatusAsync(ChangeUserPasswordRequest request)
-        {
-            var response = await _httpClient.PutAsJsonAsync(_apiEndpoints.UserEndpoints.ChangeStatus, request);
             return await response.WrapResponse();
         }
 
@@ -39,7 +34,7 @@ namespace Admin.Services.Implementations
 
         public async Task<IResponseWrapper<UserResponse>> GetByIdAsync(string userId)
         {
-            var response = await _httpClient.GetAsync($"{_apiEndpoints.UserEndpoints.GetById}{userId}");
+            var response = await _httpClient.GetAsync($"{_apiEndpoints.UserEndpoints.GetById}/{userId}");
             return await response.WrapResponse<UserResponse>();
         }
 

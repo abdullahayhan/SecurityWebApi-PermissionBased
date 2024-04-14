@@ -5,7 +5,7 @@
     <MudNavLink Href="/account" Icon="@Icons.Material.Outlined.LockPerson">Hesabım</MudNavLink>
     @if (_canViewRoles || _canViewUsers)
     {
-        <MudNavGroup Title="Admin" Icon="@Icons.Material.Outlined.Security" HideExpandIcon="false">
+        <MudNavGroup Title="Sistem Yönetimi" Icon="@Icons.Material.Outlined.Security" HideExpandIcon="false">
             @if (_canViewUsers)
             {
                 <MudNavLink Href="pages/identity/users" Icon="@Icons.Material.Outlined.Person">Kullanıcılar</MudNavLink>

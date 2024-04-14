@@ -11,7 +11,7 @@ namespace WebApi.Controllers
     public class UserController : AppBaseController<UserController>
     {
         [MustPermission(AppFeature.Users, AppAction.Create)]
-        [HttpPost]
+        [HttpPost("create-user")]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest createUserRequest)
         {
             var response = await MeaditorSender
@@ -24,7 +24,7 @@ namespace WebApi.Controllers
         }
 
         [MustPermission(AppFeature.Users, AppAction.Update)]
-        [HttpPut]
+        [HttpPut("update-user")]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUserRequest)
         {
             var response = await MeaditorSender
@@ -37,11 +37,11 @@ namespace WebApi.Controllers
         }
 
         [MustPermission(AppFeature.Users, AppAction.Read)]
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetUser(string id)
+        [HttpGet("get-user/{userId}")]
+        public async Task<IActionResult> GetUser(string userId)
         {
             var response = await MeaditorSender
-                .Send(new GetUserByIdRequest(id));
+                .Send(new GetUserByIdRequest(userId));
             if (response.IsSuccessful)
             {
                 return Ok(response);
@@ -50,7 +50,7 @@ namespace WebApi.Controllers
         }
 
         [MustPermission(AppFeature.Users, AppAction.Read)]
-        [HttpGet]
+        [HttpGet("get-all-user")]
         public async Task<IActionResult> GetAllUser()
         {
             var response = await MeaditorSender
@@ -63,8 +63,8 @@ namespace WebApi.Controllers
         }
 
         [MustPermission(AppFeature.Users, AppAction.Update)]
-        [HttpPut("change-password")]
-        public async Task<IActionResult> ChangeUserPassword(ChangeUserPasswordRequest changeUserPasswordRequest)
+        [HttpPut("change-user-password")]
+        public async Task<IActionResult> ChangeUserPassword([FromBody] ChangeUserPasswordRequest changeUserPasswordRequest)
         {
             var response = await MeaditorSender
                 .Send(new ChangeUserPasswordCommand(changeUserPasswordRequest));
@@ -72,7 +72,7 @@ namespace WebApi.Controllers
             {
                 return Ok(response);
             }
-            return NotFound(response);
+            return BadRequest(response);
         }
 
         [MustPermission(AppFeature.Users, AppAction.Read)]
