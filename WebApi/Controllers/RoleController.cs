@@ -63,7 +63,7 @@ namespace WebApi.Controllers
         }
 
         [MustPermission(AppFeature.Roles, AppAction.Delete)]
-        [HttpDelete]
+        [HttpDelete("{roleId}")]
         public async Task<IActionResult> DeleteRole(string roleId)
         {
             var response = await MeaditorSender
@@ -89,7 +89,7 @@ namespace WebApi.Controllers
         }
 
         [MustPermission(AppFeature.RoleClaims, AppAction.Update)]
-        [HttpPut("update-permission")]
+        [HttpPut("update-permissions")]
         public async Task<IActionResult> UpdateRolePermission([FromBody] UpdateRolePermissionsRequest updateRolePermissionsRequest)
         {
             var response = await MeaditorSender

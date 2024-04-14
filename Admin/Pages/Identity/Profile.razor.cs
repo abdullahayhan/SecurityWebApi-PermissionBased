@@ -10,7 +10,8 @@ namespace Admin.Pages.Identity
         public string UserId { get; set; } = string.Empty;
         private char _firstLetterOfFirstName;
         private string _email = string.Empty;
-
+        private string _firstName = string.Empty;
+        private string _lastName = string.Empty;
         protected override async Task OnInitializedAsync()
         {
             await LoadDataAsync();
@@ -25,6 +26,9 @@ namespace Admin.Pages.Identity
             UpdateUserRequest.UserId = user.GetUserId();
             UpdateUserRequest.FirstName = user.GetFirstName();
             UpdateUserRequest.LastName = user.GetLastName();
+
+            _firstName = user.GetFirstName();
+            _lastName = user.GetLastName();
             if (UpdateUserRequest.FirstName.Length > 0)
             {
                 _firstLetterOfFirstName = UpdateUserRequest.FirstName[0];

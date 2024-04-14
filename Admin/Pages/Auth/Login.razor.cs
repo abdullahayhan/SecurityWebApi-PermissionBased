@@ -57,7 +57,7 @@ namespace Admin.Pages.Auth
         private void FillAdministratorCredentials()
         {
             _tokenRequest.Email = AppCredentials.Email;
-            _tokenRequest.Password = "uw8876!@!@(#dg!k!!";
+            _tokenRequest.Password = "uw8876!@!@(#dg!k!!!";
         }
     }
 }
